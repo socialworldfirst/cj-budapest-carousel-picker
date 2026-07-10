@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>CJ Budapest · IG collab carousel</title>
+<style>
+  :root{--ink:#16181d;--ink2:#3c4148;--mut:#71777f;--faint:#9aa0a6;--line:#e7e7e4;--bg:#fbfbf9;--card:#fff;--ok:#3f7d58;--accent:#16181d;--rec:#b07a2b;--dot:#d63384;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:120px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:880px;margin:0 auto;padding:48px 24px 0}
+  h1{font-size:27px;letter-spacing:-.02em;font-weight:650;margin-bottom:8px}
+  .lede{color:var(--ink2);font-size:15.5px;max-width:64ch;margin-bottom:6px}
+  .stamp{color:var(--faint);font-size:12.5px;margin-bottom:8px}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);font-weight:650;margin:40px 0 4px;display:flex;align-items:baseline;gap:10px}
+  .ct{font-size:12px;color:var(--faint);letter-spacing:.02em;text-transform:none;font-weight:500}
+  .ct.full{color:var(--ok)}
+  .sub{color:var(--mut);font-size:13.5px;margin-bottom:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 17px;margin-bottom:11px;cursor:pointer;transition:border-color .12s,box-shadow .12s;position:relative}
+  .card:hover{border-color:#cfd2cc}
+  .card.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+  .row{display:flex;gap:13px;align-items:flex-start}
+  .tick{flex:none;width:22px;height:22px;border-radius:6px;border:1.5px solid #c4c4bf;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.12s}
+  .tick svg{width:12px;height:12px;opacity:0;transition:.12s}
+  .card.sel .tick{background:var(--accent);border-color:var(--accent)}
+  .card.sel .tick svg{opacity:1}
+  .body{flex:1;min-width:0}
+  .name{font-weight:600;font-size:15px;letter-spacing:-.01em}
+  .name .rec{font-size:11px;color:var(--rec);font-weight:650;margin-left:8px}
+  .name .tag{font-size:11px;color:var(--ok);font-weight:650;margin-left:8px}
+  .meta{font-size:12.5px;color:var(--faint);font-family:ui-monospace,Menlo,monospace;margin:1px 0 6px}
+  .desc{font-size:13.5px;color:var(--ink2);line-height:1.5}
+  .desc b{color:var(--ink);font-weight:600}
+  .strip{display:flex;gap:9px;overflow-x:auto;margin:13px 0 2px;padding-bottom:8px;scrollbar-width:thin}
+  .tile{flex:none;width:196px;height:245px;border:1px solid var(--line);border-radius:10px;background:#fdfdfb;padding:13px 13px 11px;display:flex;flex-direction:column;cursor:default}
+  .tile .n{font-size:10px;color:var(--faint);font-family:ui-monospace,Menlo,monospace;letter-spacing:.04em;display:flex;align-items:center;gap:6px;margin-bottom:8px}
+  .tile .n::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--dot);display:inline-block}
+  .tile .h{font-size:13.5px;font-weight:650;line-height:1.3;letter-spacing:-.01em;margin-bottom:7px}
+  .tile .b{font-size:11px;color:var(--mut);line-height:1.5;overflow:hidden}
+  .cap{margin-top:9px;border-top:1px solid var(--line);padding-top:9px}
+  .cap .cl{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);font-weight:650;margin-bottom:3px}
+  .cap .cx{font-size:12.5px;color:var(--ink2);line-height:1.5;font-family:ui-monospace,Menlo,monospace}
+  .note{margin-top:11px;display:none}
+  .card.sel .note{display:block}
+  .note label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);font-weight:600;display:block;margin-bottom:5px}
+  .note textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:13px/1.45 inherit;resize:vertical;min-height:34px;color:var(--ink);background:#fcfcfa}
+  .note textarea:focus{outline:none;border-color:var(--mut)}
+  .global{margin-top:20px}
+  .global label{font-size:13px;color:var(--mut);font-weight:600;display:block;margin-bottom:7px}
+  .global textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font:14px/1.5 inherit;resize:vertical;min-height:60px;background:var(--card)}
+  .global textarea:focus{outline:none;border-color:var(--mut)}
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(251,251,249,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:14px 24px}
+  .bar-in{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between}
+  .status{font-size:13px;color:var(--mut)} .status b{color:var(--ink)}
+  .btn{border:0;background:var(--ink);color:#fff;font:600 14px/1 inherit;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.12s;white-space:nowrap}
+  .btn:disabled{background:#c8cdc6;cursor:not-allowed}
+  .btn.done{background:var(--ok)}
+  @media(max-width:620px){.wrap{padding:32px 16px 0}.bar-in{flex-direction:column;align-items:stretch;gap:10px}.btn{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 id="title"></h1>
+  <p class="lede" id="intro"></p>
+  <p class="stamp" id="stamp"></p>
+  <div id="sections"></div>
+  <div class="global" id="globalWrap" style="display:none">
+    <label id="gnoteLabel"></label>
+    <textarea id="gnote"></textarea>
+  </div>
+</div>
+<div class="bar"><div class="bar-in">
+  <div class="status" id="status"></div>
+  <button class="btn" id="copy" disabled>Copy prompt</button>
+</div></div>
+<script>
+/* === DECK START === */
+const DECK = {
+  title: "CJ Budapest · IG collab carousel",
+  intro: "Five copy directions for the WorldFirst × CJ Dropshipping co-post (IG Collab, one post on both grids). Each card carries the full slide-by-slide copy and the caption. Tick the one to render; notes open on pick.",
+  stamp: "2026-07-10 · source: July 8 Budapest event decks (Andy Chou keynote + Elisabeth, CJ Europe)",
+  promptHeader: "cj budapest ig carousel picks",
+  promptAction: "Render the picked concept into finished 1080×1350 frames via the design-system pipeline (HTML + Poppins, WF × CJ co-brand), then package final caption + collab publishing plan (who posts, who accepts, tags) for Scarlett and Attila.",
+  globalNote: { label: "Anything else (optional)", placeholder: "tone shifts, slides to swap, photo vs type-only, publish timing..." },
+  sections: [
+    { key:"concepts", label:"Carousel concepts", sub:"One collab post goes out; suggest picking 1. Copy shown per slide (head + support line). All CJ numbers are from their own stage decks.", pick:1, notes:true,
+      items:[
+        { name:"1 · Most ceilings are self-created", meta:"mindset · 8 slides · collab: CJ page + Andy personal", rec:true,
+          desc:"<b>The founder-wisdom cut.</b> Andy Chou's lines carry the whole thing; WF hosts, product stays light. Strongest collab fit: CJ and Andy both have skin in pushing it, and founder content travels furthest with the dropshipping crowd.",
+          slides:[
+            {h:"Most ceilings are self-created.", b:"What CJ's founder told 100+ sellers in Budapest. WorldFirst × CJ Dropshipping."},
+            {h:"July 8. Budapest.", b:"100+ independent sellers in one room. CJ Dropshipping founder Andy Chou on stage. These are the lines that stuck."},
+            {h:"“Our market is too small.”", b:"Andy's answer: that is rarely the market talking. Focus, improve, persist. The ceiling is usually self-built."},
+            {h:"What worked yesterday won't work tomorrow.", b:"Then: product picking, traffic arbitrage, one platform. Now: brand, content, systems, adaptation."},
+            {h:"Strategy decides direction. Execution validates it.", b:"Don't wait for perfect conditions. Start small, learn fast, iterate fast."},
+            {h:"Competition is learning, not winning.", b:"Sellers who study their rivals grow faster than sellers who fight them."},
+            {h:"Busy teams hold meetings. Great teams run experiments.", b:"More experiments, more customers, more markets. Increase your opportunity density."},
+            {h:"“Insist on working on your business and never give it up.”", b:"Andy Chou, Budapest 2026. Follow both pages for the next city."}
+          ],
+          caption:"CJ's founder said the quiet part out loud in Budapest 🇭🇺 100+ sellers, one message: the ceiling is usually you, not the market. Save this for your next plateau. With @cjdropshipping @andychoucj  #ecommerce #dropshipping #cjdropshipping #worldfirst"},
+        { name:"2 · Two days faster", meta:"ops stat · 8 slides · product-forward",
+          desc:"<b>The bottleneck cut.</b> CJ's headline stat sets up WF's instant payment as the natural next fix. Tightest product integration of the five; reads more branded, so lands best once the audience has met us via concept 1.",
+          slides:[
+            {h:"Two days faster.", b:"CJ cut its delivery times. Guess which layer of your supply chain is the slow one now."},
+            {h:"The year's work, in one stat.", b:"In Budapest, CJ Dropshipping Europe showed delivery windows down by up to two days across the US, Germany and Australia."},
+            {h:"How they did it.", b:"Self-run warehouses in China, the US, Germany and Nigeria. 16 partner warehouses worldwide. 110,000+ ready-to-ship SKUs."},
+            {h:"Faster fulfilment moves the bottleneck.", b:"It doesn't remove it. The slow part of your chain just changes address."},
+            {h:"The new slow layer: money.", b:"When shipping stops being the wait, a supplier payment that takes days is."},
+            {h:"Close the gap.", b:"WorldFirst payments to CJ Dropshipping arrive instantly, with zero transaction fees. Orders move the moment you pay."},
+            {h:"Fast shipping + instant payment.", b:"A supply chain with no dead time. That is the whole point."},
+            {h:"Built with CJ Dropshipping.", b:"From the WorldFirst × CJ event, Budapest 2026. Next city soon."}
+          ],
+          caption:"Fulfilment got two days faster. Did your payments keep up? From our Budapest event with @cjdropshipping.  #dropshipping #supplychain #ecommerce #worldfirst"},
+        { name:"3 · You run a stack", meta:"ecosystem teach · 8 slides · evergreen",
+          desc:"<b>The ecosystem cut.</b> Least event-bound, works as evergreen education for months. Closes on the third-party proof: CJ put WorldFirst on their own ecosystem slide, in the payments ring.",
+          slides:[
+            {h:"Nobody scales on one platform.", b:"The stack behind every serious store in 2026."},
+            {h:"One slide in Budapest mapped it.", b:"Storefronts, marketplaces, warehouses, carriers, ad platforms, mentors, payments. Sellers don't run a shop. They run a stack."},
+            {h:"Layer 1: sell.", b:"Shopify, Amazon, TikTok Shop, Etsy. Where revenue happens, in many currencies."},
+            {h:"Layer 2: fulfil.", b:"CJ Dropshipping: 110,000+ ready-to-ship SKUs, warehouses on four continents, 200+ destination countries."},
+            {h:"Layer 3: grow.", b:"Meta, Google, TikTok ads. The spend that buys attention, every single day."},
+            {h:"The layer under all of them: money.", b:"Collect from 130+ marketplaces. Pay CJ instantly, free. Get 1% back on ads, logistics and software."},
+            {h:"A stack is only as strong as its slowest layer.", b:"Make sure it isn't the money."},
+            {h:"We didn't put ourselves on CJ's map. They did.", b:"WorldFirst, in the payments ring of CJ's own ecosystem slide. Budapest 2026, with CJ Dropshipping."}
+          ],
+          caption:"The stack behind stores that scale. From the WorldFirst × CJ Budapest stage, including the one slide we didn't expect to see ourselves on. With @cjdropshipping  #ecommerce #dropshipping #shopify #worldfirst"},
+        { name:"4 · Budapest, in numbers", meta:"event recap · 8 slides · photo-friendly",
+          desc:"<b>The recap cut.</b> Big type, one number per frame, event photos as backgrounds if we want them. Fastest to produce and easiest to co-brand; strongest social proof, shortest shelf life.",
+          slides:[
+            {h:"Budapest, in numbers.", b:"WorldFirst × CJ Dropshipping, July 8."},
+            {h:"100+", b:"independent sellers in one room, from first store to scaled operations."},
+            {h:"2", b:"cities so far. Amsterdam, then Budapest. Central and Western Europe, covered."},
+            {h:"2 days", b:"faster: CJ's delivery improvement this year across key markets."},
+            {h:"110,000+", b:"ready-to-ship SKUs from 1,000+ suppliers on the CJ platform."},
+            {h:"0", b:"transaction fees when you pay CJ through WorldFirst. And it lands instantly."},
+            {h:"130+ and 1%", b:"marketplaces you can collect from, and cashback on ads, logistics and software spend."},
+            {h:"Next city loading.", b:"Follow both accounts so you don't miss the seat."}
+          ],
+          caption:"The whole event in eight numbers 🇭🇺 With @cjdropshipping. Which one surprised you?  #ecommerce #dropshipping #cjdropshipping #worldfirst"},
+        { name:"5 · Before you scale", meta:"utility checklist · 8 slides · save-bait",
+          desc:"<b>The checklist cut.</b> Pure teach-useful, highest save potential. Blends both talks into one balanced piece: Andy's mindset, CJ's ops, WF's money layer. Value first, brands second.",
+          slides:[
+            {h:"Before you scale past your first 1,000 orders.", b:"A six-point checklist from the WorldFirst × CJ Budapest stage."},
+            {h:"01 Stop blaming the market.", b:"Most ceilings are self-created. Focus, improve, persist before you pivot."},
+            {h:"02 Build past one platform.", b:"Product picking and traffic arbitrage built the last era. Brand, content and systems build this one."},
+            {h:"03 Put inventory near your customers.", b:"CJ runs warehouses on four continents. Deliveries got up to two days faster this year."},
+            {h:"04 Kill dead time in payments.", b:"Pay suppliers instantly and free through WorldFirst, so orders move the moment you do."},
+            {h:"05 Collect like a local.", b:"130+ marketplaces, local currencies, one account. Convert when the rate suits you."},
+            {h:"06 Make your spend earn.", b:"1% back on ads, logistics and software. Costs you already pay, working for you."},
+            {h:"Save this checklist.", b:"Run it before your next scaling push. WorldFirst × CJ Dropshipping, Budapest 2026."}
+          ],
+          caption:"Six checks before you scale. Straight from the Budapest stage to your saved folder. With @cjdropshipping  #ecommerce #dropshipping #ecommercetips #worldfirst"}
+      ] }
+  ]
+};
+/* === DECK END === */
+
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+/* No hard caps: every section is free multi-select. `pick` is a SUGGESTED count only. */
+const state={}, notes={};
+DECK.sections.forEach(s=>{ state[s.key]= new Set(); notes[s.key]={}; });
+
+document.getElementById('title').textContent=DECK.title||'Deck';
+document.getElementById('intro').textContent=DECK.intro||'';
+document.getElementById('stamp').textContent=DECK.stamp||'';
+if(DECK.globalNote){ document.getElementById('globalWrap').style.display='block';
+  document.getElementById('gnoteLabel').textContent=DECK.globalNote.label||'Notes';
+  document.getElementById('gnote').placeholder=DECK.globalNote.placeholder||''; }
+
+const root=document.getElementById('sections');
+DECK.sections.forEach(s=>{
+  const h=document.createElement('h2'); h.innerHTML=`${s.label} <span class="ct" id="ct-${s.key}"></span>`; root.appendChild(h);
+  if(s.sub){ const p=document.createElement('p'); p.className='sub'; p.textContent=s.sub; root.appendChild(p); }
+  const box=document.createElement('div'); box.id='sec-'+s.key; root.appendChild(box);
+  s.items.forEach((o,i)=> box.appendChild(card(s,i,o)));
+});
+
+function card(s,i,o){
+  const el=document.createElement('div'); el.className='card'; el.dataset.k=s.key; el.dataset.i=i;
+  const rec=o.rec?'<span class="rec">★ rec</span>':'';
+  const tag=o.tag?`<span class="tag">${o.tag}</span>`:'';
+  const meta=o.meta?`<div class="meta">${o.meta}</div>`:'';
+  const strip=o.slides?`<div class="strip">${o.slides.map((sl,n)=>`<div class="tile"><div class="n">slide ${n+1} / ${o.slides.length}</div><div class="h">${sl.h}</div><div class="b">${sl.b}</div></div>`).join('')}</div>`:'';
+  const cap=o.caption?`<div class="cap"><div class="cl">caption</div><div class="cx">${o.caption}</div></div>`:'';
+  const note=s.notes?`<div class="note"><label>your note (optional)</label><textarea placeholder="note on this pick..."></textarea></div>`:'';
+  el.innerHTML=`<div class="row"><div class="tick">${CHECK}</div><div class="body"><div class="name">${o.name}${rec}${tag}</div>${meta}<div class="desc">${o.desc||''}</div>${strip}${cap}${note}</div></div>`;
+  el.addEventListener('click',e=>{ if(e.target.tagName==='TEXTAREA')return; toggle(s,i,el); });
+  const ta=el.querySelector('textarea'); if(ta){ ta.addEventListener('click',e=>e.stopPropagation()); ta.addEventListener('input',e=>{ notes[s.key][i]=e.target.value; }); }
+  return el;
+}
+function toggle(s,i,el){
+  const set=state[s.key];
+  if(set.has(i)){ set.delete(i); el.classList.remove('sel'); }
+  else { set.add(i); el.classList.add('sel'); }
+  update();
+}
+function selCount(s){ return state[s.key].size; }
+function totalCount(){ return DECK.sections.reduce((t,s)=>t+selCount(s),0); }
+function update(){
+  DECK.sections.forEach(s=>{ const c=document.getElementById('ct-'+s.key); c.textContent=`suggest ${s.pick} · ${selCount(s)} selected`; c.className='ct'+(selCount(s)>0?' full':''); });
+  const total=totalCount(); const btn=document.getElementById('copy'); btn.disabled=total===0; btn.classList.remove('done'); btn.textContent='Copy prompt';
+  document.getElementById('status').innerHTML = total===0
+    ? 'Select anything. No limits, the prompt carries whatever you pick.'
+    : `<b>${total}</b> pick${total===1?'':'s'} in the prompt. Suggested counts are guidance only.`;
+}
+function buildPrompt(){
+  let L=['== '+(DECK.promptHeader||'deck')+' =='];
+  DECK.sections.forEach(s=>{
+    if(selCount(s)===0) return;
+    L.push(`${s.label} (${selCount(s)} picked, ${s.pick} suggested):`);
+    [...state[s.key]].forEach((i,n)=>{ const o=s.items[i]; const nt=notes[s.key][i]?` [note: ${notes[s.key][i].trim()}]`:''; L.push(`  ${n+1}. ${o.name}${nt}`); });
+  });
+  const g=DECK.globalNote? document.getElementById('gnote').value.trim():'';
+  if(g) L.push('NOTES: '+g);
+  L.push('> Counts are my call, work with exactly what I ticked.');
+  if(DECK.promptAction) L.push('> '+DECK.promptAction);
+  return L.join('\n');
+}
+document.getElementById('copy').addEventListener('click',async()=>{
+  const txt=buildPrompt();
+  try{ await navigator.clipboard.writeText(txt); }catch(e){ const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  const b=document.getElementById('copy'); b.classList.add('done'); b.textContent='Copied · paste it to Claude'; setTimeout(()=>{ if(!b.disabled){b.classList.remove('done'); b.textContent='Copy prompt';} },2600);
+});
+update();
+</script>
+</body>
+</html>
